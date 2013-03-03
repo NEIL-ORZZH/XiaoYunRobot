@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">小云机器人</string>
+    <string name="menu_settings">设置</string>
+    <string name="myname">我</string>
+    <string name="robotname">小云</string>
+    <string name="et1_hint">在这里输入文字</string>
+    <string name="btn1_text">发送</string>
+    <string name="AI_hello">你好!我叫小云.</string>
+
+</resources>

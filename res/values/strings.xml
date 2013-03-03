@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">XiaoYun</string>
+    <string name="menu_settings">Settings</string>
+    <string name="myname">Me</string>
+    <string name="robotname">XiaoYun</string>
+    <string name="et1_hint">Input words here.</string>
+    <string name="btn1_text">Send</string>
+    <string name="AI_unknow">Sorry, I do not know what you mean.</string>
+    <string name="AI_hello">Hello! I am XiaoYun.</string>
+    
+</resources>
