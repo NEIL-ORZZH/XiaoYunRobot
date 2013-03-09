@@ -2,12 +2,13 @@
 <resources>
 
     <string name="app_name">XiaoYun</string>
-    <string name="menu_settings">Settings</string>
+    <string name="menu_settings">About this app</string>
     <string name="myname">Me</string>
     <string name="robotname">XiaoYun</string>
     <string name="et1_hint">Input words here.</string>
     <string name="btn1_text">Send</string>
     <string name="AI_unknow">Sorry, I do not know what you mean.</string>
     <string name="AI_hello">Hello! I am XiaoYun.</string>
+    <string name="about_context">XiaoYunRobot 1.1 Beta\nPaperAirplane\nProgrammer: Fython\nE-mail:fython@163.com\n\nWelcome to use this application!\nWelcome more suggestions.</string>
     
 </resources>

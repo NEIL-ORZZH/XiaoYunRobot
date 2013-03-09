@@ -2,11 +2,13 @@
 <resources>
 
     <string name="app_name">小云机器人</string>
-    <string name="menu_settings">设置</string>
+    <string name="menu_settings">关于 小云机器人</string>
     <string name="myname">我</string>
     <string name="robotname">小云</string>
     <string name="et1_hint">在这里输入文字</string>
     <string name="btn1_text">发送</string>
+    <string name="AI_unknow">啊啊啊!一个程序猿智商太低,暂时不能回答你的问题。</string>
     <string name="AI_hello">你好!我叫小云.</string>
+    <string name="about_context">小云机器人 1.1 Beta\n纸飞机移动应用出品\n程序开发: Fython烧饼 \n求美工一名....\n新浪微博:@Sudo- \n邮箱:fython@163.com\n\n欢迎使用本软件,欢迎多多提意见!</string>
 
 </resources>
