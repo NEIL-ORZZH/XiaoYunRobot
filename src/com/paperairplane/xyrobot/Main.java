@@ -2,10 +2,13 @@ package com.paperairplane.xyrobot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +39,7 @@ public class Main extends Activity {
 				addItem(getString(R.string.robotname) +" : "+ RobotAI.getAnswer(UserMsg));
 			}
 		});
+		AI_UnknowMsg = getString(R.string.AI_unknow);
 		addItem(getString(R.string.robotname) +" : "+ getString(R.string.AI_hello));
 	}
 
@@ -56,6 +60,15 @@ public class Main extends Activity {
 		switch (menu.getItemId()) {
 		case R.id.menu_settings:
 			showAbout();
+			break;
+		case R.id.menu_follow:
+			Uri uri = Uri.parse("http://weibo.com/fython");
+			Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+			startActivity(intent);
+			break;
+		case R.id.menu_exit:
+			finish();
+			System.exit(0);
 			break;
 		}
 		return true;

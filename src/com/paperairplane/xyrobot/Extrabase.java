@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,15 +74,14 @@ public class Extrabase {
 		
 		for(i=0;i<FileCount;i++){
 			if (itemQ.toString().toLowerCase().indexOf(Q.toLowerCase()) != -1){
-				return itemA.get(getRandom(itemA.size()-1));
+				return itemA.get(getRandom(itemA.size()));
 			}
 		}
 		return RobotAI.BaseNotFound;
 	}
 	
 	public static int getRandom(int Maxnum){
-		Random random = new Random();
-		return Math.abs(random.nextInt()) % Maxnum;
+		return (int) (System.currentTimeMillis() % Maxnum);
 	}
 	
 	public static List<File> getFile(File file){

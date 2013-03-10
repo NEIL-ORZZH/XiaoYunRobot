@@ -7,7 +7,8 @@ import java.util.Date;
 
 public class RobotAI {
 
-	static int GoodMorning_events = 0;
+	static int GoodMorning_events = 0; //早上问候事件记录器
+	public static String BaseNotFound = "f91e5ce9c2fef8063eb44df100c2d53c"; //猜猜这是什么 哈哈哈
 	private static int FindStr(String str0,String str1){
 		return str0.indexOf(str1);
 	}
@@ -23,7 +24,14 @@ public class RobotAI {
 	
 	@SuppressWarnings("deprecation")
 	public static String getAnswer(String question){
-		if (FindStr(question.toLowerCase(),"hello") != -1){
+		/* 自定义问答库 */
+		String extra = Extrabase.getAnswer(question);
+		if (extra != BaseNotFound){
+			return extra;
+		}
+		
+		/* 预置的问答库 */
+		if ((FindStr(question.toLowerCase(),"hello") != -1)| (FindStr(question.toLowerCase(),"hello")) != -1){
 			return Math.round(Math.random()) != 0 ? "Hey guys!" : "Hello!";
 		}
 		if ((FindStr(question,"早晨") != -1)|(FindStr(question,"早上") != -1 & FindStr(question,"好") != -1)|(FindStr(question,"早安") != -1)){
@@ -144,14 +152,13 @@ public class RobotAI {
 				return "";
 			}
 		}
-		if ((FindStr(question,"我去年买了个表") != -1)|(FindStr(question,"逼") != -1)|(FindStr(question,"草") != -1)|(FindStr(question,"冚") != -1)|(FindStr(question,"叼") != -1)){
+		if ((FindStr(question,"我去年买了个表") != -1)|(FindStr(question,"逼") != -1)|(FindStr(question,"草") != -1)|(FindStr(question,"冚") != -1)|(FindStr(question,"叼") != -1)|(FindStr(question,"老母") != -1)|(FindStr(question,"老豆") != -1)){
 			Main.i++;
 			if (Main.i == 2){
 				return "你再骂我试试?";
 			}
 			if (Main.i == 3){
-				int a;
-				a = 1/0;
+				int a = 1/0;
 				return Integer.toString(a);
 			}
 			return Math.round(Math.random()) != 0 ? "你妹" : "我去年买了个表";
