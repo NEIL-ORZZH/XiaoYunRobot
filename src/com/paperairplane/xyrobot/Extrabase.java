@@ -40,6 +40,7 @@ public class Extrabase {
 		    	Temp.add(person.getString("Q"+Integer.toString(j+1)));
 		    }
 		    itemQ.add(Temp);
+		    Log.i("",itemQ.toString());
 		    Temp = new ArrayList<String>();
 		    for (j=0;j<CountA;j++){
 		    	Temp.add(person.getString("A"+Integer.toString(j+1)));
@@ -56,14 +57,14 @@ public class Extrabase {
 			try {
 				InitData();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		
 		for(i=0;i<FileCount;i++){
 			if (itemQ.get(i).toString().toLowerCase().indexOf(Q.toLowerCase()) != -1){
-				return itemA.get(i).get(getRandom(itemA.size()));
+				Log.i("",itemA.get(i).toString());
+				return itemA.get(i).get(0);
 			}
 		}
 		return RobotAI.BaseNotFound;
