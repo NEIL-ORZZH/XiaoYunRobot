@@ -18,6 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 public class Main extends Activity {
 
@@ -33,10 +35,22 @@ public class Main extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				EditText editText1 = (EditText) findViewById(R.id.editText1);
+				ListView listView1 = (ListView) findViewById(R.id.listView1);
+				ProgressBar PB = (ProgressBar) findViewById(R.id.progressBar1);
+				
 				UserMsg = editText1.getText().toString();
+				if (UserMsg.equals("")){
+					editText1.setText("");
+					Toast.makeText(getApplication(),getString(R.string.AI_StringEMPTY),Toast.LENGTH_LONG).show();
+					return;
+				}
+				
 				editText1.setText("");
+				PB.setVisibility(ProgressBar.VISIBLE);
 				addItem(getString(R.string.myname) +" : "+ UserMsg);
 				addItem(getString(R.string.robotname) +" : "+ RobotAI.getAnswer(UserMsg));
+				listView1.setSelection(listView1.getCount());
+				PB.setVisibility(ProgressBar.INVISIBLE);
 			}
 		});
 		AI_UnknowMsg = getString(R.string.AI_unknow);

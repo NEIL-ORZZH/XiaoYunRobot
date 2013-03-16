@@ -12,5 +12,7 @@
     <string name="about_context">XiaoYunRobot 1.1 Beta\nPaperAirplane\nProgrammer: Fython\nE-mail:fython@163.com\n\nWelcome to use this application!\nWelcome more suggestions.</string>
     <string name="menu_exit">Exit</string>
     <string name="menu_follow">Follow Weibo</string>
+    <string name="AI_LoadFileFailed">Load File Failed</string>
+    <string name="AI_StringEMPTY">Please input words.</string>
     
 </resources>

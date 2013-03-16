@@ -139,7 +139,7 @@ public class RobotAI {
 		}
 		if (FindStr(question,"中考") != -1){
 			try {
-				return "离中考还有 "+getDJS("2013-6-17")+" 天!加油!";
+				return "离中考还有 "+getDJS("2013-6-19")+" 天!加油!";
 			} catch (ParseException e) {
 				return "";
 			}
@@ -152,7 +152,16 @@ public class RobotAI {
 				return "";
 			}
 		}
-		if ((FindStr(question,"我去年买了个表") != -1)|(FindStr(question,"逼") != -1)|(FindStr(question,"草") != -1)|(FindStr(question,"冚") != -1)|(FindStr(question,"叼") != -1)|(FindStr(question,"老母") != -1)|(FindStr(question,"老豆") != -1)){
+		if ((FindStr(question,"我去年买了个表") != -1)|
+			(FindStr(question,"逼") != -1)|
+			(FindStr(question,"fuck") != -1)|
+			(FindStr(question,"cao") != -1)|
+			(FindStr(question,"草") != -1)|
+			(FindStr(question,"冚") != -1)|
+			(FindStr(question,"叼") != -1)|
+			(FindStr(question,"屌") != -1)|
+			(FindStr(question,"老母") != -1)|
+			(FindStr(question,"老豆") != -1)){
 			Main.i++;
 			if (Main.i == 2){
 				return "你再骂我试试?";
