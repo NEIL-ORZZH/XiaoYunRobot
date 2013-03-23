@@ -62,16 +62,19 @@ public class Extrabase {
 		}
 		
 		for(i=0;i<FileCount;i++){
-			if (itemQ.get(i).toString().toLowerCase().indexOf(Q.toLowerCase()) != -1){
-				Log.i("",itemA.get(i).toString());
-				return itemA.get(i).get(0);
+			int j = 0;
+			ArrayList<String> ListTEMP = itemQ.get(i);
+			for (j=0;j<ListTEMP.size();j++){
+			 if (ListTEMP.get(j).toLowerCase().indexOf(Q.toLowerCase()) != -1){
+		   		return itemA.get(i).get(getRandom(itemA.get(i).size())-1);
+			 }
 			}
 		}
 		return RobotAI.BaseNotFound;
 	}
 	
 	public static int getRandom(int Maxnum){
-		return (int) (System.currentTimeMillis() % Maxnum);
+		return (int) (System.currentTimeMillis() % (Maxnum+1));
 	}
 	
 	public static List<File> getFile(File file){

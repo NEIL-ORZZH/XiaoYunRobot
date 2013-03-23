@@ -9,7 +9,11 @@
     <string name="btn1_text">发送</string>
     <string name="AI_unknow">啊啊啊!一个程序猿智商太低,暂时不能回答你的问题。</string>
     <string name="AI_hello">你好!我叫小云.</string>
-    <string name="about_context">小云机器人 1.1 Beta\n纸飞机移动应用出品\n程序开发: Fython烧饼 \n求美工一名....\n新浪微博:@Sudo- \n邮箱:fython@163.com\n\n欢迎使用本软件,欢迎多多提意见!</string>
+    <string name="about_context">小云机器人 1.0.1 Beta\n纸飞机移动应用出品\n程序开发: Fython \n美工: Fython\n测试: Fython 脑残\n新浪微博:@Sudo- \n邮箱:fython@163.com\n\n欢迎使用本软件,欢迎多多提意见!</string>
     <string name="menu_exit">退出</string>
-    <string name="menu_follow">关注作者微博</string>
+    <string name="menu_follow">访问作者博客</string>
+    <string name="AI_LoadFileFailed">加载文件失败</string>
+    <string name="AI_StringEMPTY">请输入内容</string>
+    <string name="menu_reload">重新加载词库</string>
+    
 </resources>

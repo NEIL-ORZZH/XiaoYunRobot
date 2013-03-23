@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,6 +28,8 @@ public class Main extends Activity {
 	String UserMsg;
 	static String AI_UnknowMsg;
 	List<String> data = new ArrayList<String>();
+	static List<String> Title,Text = new ArrayList<String>();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,27 +42,82 @@ public class Main extends Activity {
 				ProgressBar PB = (ProgressBar) findViewById(R.id.progressBar1);
 				
 				UserMsg = editText1.getText().toString();
+				
+				/* 检查内容是否为空 */
 				if (UserMsg.equals("")){
 					editText1.setText("");
-					Toast.makeText(getApplication(),getString(R.string.AI_StringEMPTY),Toast.LENGTH_LONG).show();
+					CreateToast(getString(R.string.AI_StringEMPTY),Toast.LENGTH_SHORT);
 					return;
 				}
 				
-				editText1.setText("");
-				PB.setVisibility(ProgressBar.VISIBLE);
-				addItem(getString(R.string.myname) +" : "+ UserMsg);
-				addItem(getString(R.string.robotname) +" : "+ RobotAI.getAnswer(UserMsg));
-				listView1.setSelection(listView1.getCount());
-				PB.setVisibility(ProgressBar.INVISIBLE);
+				editText1.setText(""); //清空EditText
+				PB.setVisibility(ProgressBar.VISIBLE); //显示Loading动画
+				
+				/* 聊天记录反馈 */
+				addItem(getString(R.string.myname),UserMsg);
+				addItem(getString(R.string.robotname), 
+				((UserMsg.indexOf("音乐") != -1) & (UserMsg.indexOf("分享") != -1)
+				             ? IWantToShareMusic() : RobotAI.getAnswer(UserMsg)));
+				
+				listView1.setSelection(listView1.getCount()); //保持在视线在最下一个Item
+				PB.setVisibility(ProgressBar.INVISIBLE); //隐藏动画
 			}
 		});
 		AI_UnknowMsg = getString(R.string.AI_unknow);
-		addItem(getString(R.string.robotname) +" : "+ getString(R.string.AI_hello));
+		addItem(getString(R.string.robotname),getString(R.string.AI_hello));
 	}
 
-	public void addItem(String string){
-		data.add(string);
+	public void addItem(String title,String text){
+		/* 原List显示方法 */
+		data.add(title +": " + text); 
 		((ListView) findViewById(R.id.listView1)).setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data));
+	}
+	
+	public String IWantToShareMusic(){
+		if (StartMusicShare()) {
+			return "好的! 现在使用音乐分享为你服务.";
+		} else {
+			CreateToast("OMG! 您没有安装纸飞机音乐分享!",Toast.LENGTH_SHORT);
+			return "不好意思,暂时不能分享音乐";
+		}
+	}
+	
+	public boolean StartMusicShare(){
+		Intent intent = new Intent();
+        intent = getPackageManager().getLaunchIntentForPackage("com.paperairplane.music.share");
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//..FLAG_ACTIVITY_NEW_TASK);                      
+        try {
+         startActivityForResult(intent,0);
+         return true;
+        } catch (ActivityNotFoundException e) {
+         e.printStackTrace();
+         return false;
+        }
+	}
+	
+	/* UI部分 Code */
+	public Dialog onCreateDialog(final int _id) {
+		if (_id == R.layout.about) {
+			View about = LayoutInflater.from(this).inflate(R.layout.about, null);
+			
+			((Button) about.findViewById(R.id.button_about)).setOnClickListener(new OnClickListener() {
+				@SuppressWarnings("deprecation")
+				public void onClick(View v) {
+					removeDialog(R.layout.about);
+				}
+			});
+			
+			((Button) about.findViewById(R.id.button_follow)).setOnClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					Uri uri = Uri.parse("http://m-sky.lofter.com/");
+					Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+					startActivity(intent);
+				}
+			});
+			return new AlertDialog.Builder(this).setView(about).create();
+		}
+		return null;
 	}
 	
 	@Override
@@ -75,10 +133,12 @@ public class Main extends Activity {
 		case R.id.menu_settings:
 			showAbout();
 			break;
-		case R.id.menu_follow:
-			Uri uri = Uri.parse("http://weibo.com/fython");
-			Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-			startActivity(intent);
+		case R.id.menu_reload:
+			try {
+				Extrabase.InitData();
+			} catch (Exception e) {
+				Toast.makeText(getApplication(),getString(R.string.AI_LoadFileFailed),Toast.LENGTH_SHORT).show();
+			}
 			break;
 		case R.id.menu_exit:
 			finish();
@@ -88,21 +148,8 @@ public class Main extends Activity {
 		return true;
 	}
 	
-	public Dialog onCreateDialog(final int _id) {
-		if (_id == R.layout.about) {
-			View about = LayoutInflater.from(this)
-					.inflate(R.layout.about, null);
-			Button button_about = (Button) about
-					.findViewById(R.id.button_about);
-			button_about.setOnClickListener(new OnClickListener() {
-				@SuppressWarnings("deprecation")
-				public void onClick(View v) {
-					removeDialog(R.layout.about);
-				}
-			});
-			return new AlertDialog.Builder(this).setView(about).create();
-		}
-		return null;
+	public void CreateToast(String string,int ToastLength){
+		Toast.makeText(getApplication(),string,ToastLength).show();
 	}
 	
 	@SuppressWarnings("deprecation")

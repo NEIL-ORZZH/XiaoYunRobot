@@ -3,18 +3,8 @@
     android:id="@+id/about"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#000"
+    android:background="@drawable/background_holo_dark"
     android:orientation="vertical" >
-
-    <Button
-        android:id="@+id/button_about"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_alignRight="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:gravity="center"
-        android:text="@android:string/ok" />
 
     <TextView
         android:id="@+id/textView1"
@@ -26,5 +16,25 @@
         android:gravity="center"
         android:text="@string/about_context"
         android:textColor="#fff" />
-    
+
+    <Button
+        android:id="@+id/button_follow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/holo_button"
+        android:text="@string/menu_follow" />
+
+    <Button
+        android:id="@+id/button_about"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button_follow"
+        android:layout_alignRight="@+id/button_follow"
+        android:layout_below="@+id/button_follow"
+        android:background="@drawable/holo_button"
+        android:gravity="center"
+        android:text="@android:string/ok" />
+
 </RelativeLayout>

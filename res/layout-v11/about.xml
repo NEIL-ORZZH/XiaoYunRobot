@@ -6,16 +6,6 @@
     android:background="#000"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/button_about"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_alignRight="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:gravity="center"
-        android:text="@android:string/ok" />
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
@@ -26,5 +16,22 @@
         android:gravity="center"
         android:text="@string/about_context"
         android:textColor="#fff" />
+
+    <Button
+        android:id="@+id/button_follow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_toRightOf="@+id/button_about"
+        android:text="@string/menu_follow" />
+
+    <Button
+        android:id="@+id/button_about"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@android:string/ok" />
     
 </RelativeLayout>
