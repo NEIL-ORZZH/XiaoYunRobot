@@ -7,10 +7,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +28,8 @@ public class Main extends Activity {
 	static String AI_UnknowMsg;
 	List<String> data = new ArrayList<String>();
 	static List<String> Title,Text = new ArrayList<String>();
-
+	AlertDialog dialogAbout;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -91,35 +91,11 @@ public class Main extends Activity {
          startActivityForResult(intent,0);
          return true;
         } catch (ActivityNotFoundException e) {
-         e.printStackTrace();
          return false;
         }
 	}
 	
 	/* UI²¿·Ö Code */
-	public Dialog onCreateDialog(final int _id) {
-		if (_id == R.layout.about) {
-			View about = LayoutInflater.from(this).inflate(R.layout.about, null);
-			
-			((Button) about.findViewById(R.id.button_about)).setOnClickListener(new OnClickListener() {
-				@SuppressWarnings("deprecation")
-				public void onClick(View v) {
-					removeDialog(R.layout.about);
-				}
-			});
-			
-			((Button) about.findViewById(R.id.button_follow)).setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					Uri uri = Uri.parse("http://m-sky.lofter.com/");
-					Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-					startActivity(intent);
-				}
-			});
-			return new AlertDialog.Builder(this).setView(about).create();
-		}
-		return null;
-	}
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_main, menu);
@@ -152,9 +128,29 @@ public class Main extends Activity {
 		Toast.makeText(getApplication(),string,ToastLength).show();
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void showAbout(){
-		showDialog(R.layout.about);
+		DialogInterface.OnClickListener listenerAbout = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int whichButton) {
+				switch (whichButton) {
+				case DialogInterface.BUTTON_POSITIVE:
+					dialogAbout.cancel();
+					break;
+				case DialogInterface.BUTTON_NEGATIVE:
+					Uri uri = Uri.parse("http://m-sky.lofter.com");
+					Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+					startActivity(intent);
+					break;
+				}
+			}
+		};
+		dialogAbout = new AlertDialog.Builder(this)
+		.setIcon(android.R.drawable.ic_dialog_info)
+		.setTitle(getString(R.string.menu_about))
+		.setMessage(getString(R.string.about_context))
+		.setPositiveButton(android.R.string.ok, listenerAbout)
+		.setNegativeButton(R.string.about_contact, listenerAbout)
+		.show();
 	}
-
+	
 }
