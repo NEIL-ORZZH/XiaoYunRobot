@@ -5,10 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.content.Context;
+import android.content.Intent;
+import android.widget.Toast;
+
 public class RobotAI {
 
 	static int GoodMorning_events = 0; //早上问候事件记录器
 	public static String BaseNotFound = "f91e5ce9c2fef8063eb44df100c2d53c"; //猜猜这是什么 哈哈哈
+	
 	private static int FindStr(String str0,String str1){
 		return str0.indexOf(str1);
 	}
@@ -22,17 +27,39 @@ public class RobotAI {
 		return Long.toString(time);
 	}
 	
+	public static boolean StartAndroidAPP(String string,Context context){
+		try {
+			Intent intent = new Intent();
+			intent = context.getPackageManager().getLaunchIntentForPackage(string);
+			intent.setAction(Intent.ACTION_VIEW);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			context.startActivity(intent);
+        	return true;
+        } catch (Exception e) {
+        	return false;
+        }
+	}
+	
 	@SuppressWarnings("deprecation")
-	public static String getAnswer(String question){
+	public static String getAnswer(String question,Context context){
 		/* 自定义问答库 */
 		String extra = Extrabase.getAnswer(question);
 		if (extra != BaseNotFound){
 			return extra;
 		}
 		
+		/* 实用部分 */
+		if ((question.indexOf("音乐") != -1) & (question.indexOf("分享") != -1)){
+			Toast.makeText(context,"OMG! 您没有安装纸飞机音乐分享!",Toast.LENGTH_SHORT).show();
+			return StartAndroidAPP("com.paperairplane.music.share",context) ? "启动成功！现在使用音乐分享为您服务。" : "抱歉，您没有安装音乐分享不可以使用本服务。请登录http://www.paperairplane.tk";
+		}
+		
 		/* 预置的问答库 */
 		if ((FindStr(question.toLowerCase(),"hello") != -1)| (FindStr(question.toLowerCase(),"hello")) != -1){
 			return Math.round(Math.random()) != 0 ? "Hey guys!" : "Hello!";
+		}
+		if ((question.indexOf("更新") != -1) | (question.indexOf("版本") != -1) | (question.indexOf("说明") != -1)){
+			return context.getString(R.string.whatsnew);
 		}
 		if ((FindStr(question,"早晨") != -1)|(FindStr(question,"早上") != -1 & FindStr(question,"好") != -1)|(FindStr(question,"早安") != -1)){
 			if (GoodMorning_events != 0){
@@ -171,6 +198,10 @@ public class RobotAI {
 				return Integer.toString(a);
 			}
 			return Math.round(Math.random()) != 0 ? "你妹" : "我去年买了个表";
+		}
+		
+		if (FindStr(question,"啊") != -1){
+			return "啊什么啊……";
 		}
 		return Main.AI_UnknowMsg;
 	}

@@ -16,5 +16,6 @@
     <string name="menu_reload">Reload Dict</string>
     <string name="menu_about">About XiaoYun</string><string name="about_context">XiaoYunRobot 1.0.1 Beta\nPaperAirplane\nProgrammer: Fython\nE-mail:fython@163.com\n\nWelcome to use this application!\nWelcome more suggestions.</string>
     <string name="about_contact">"Visit Fython's Blog"</string>
+    <string name="whatsnew">1.I can talk about more topics!\n2.I can run other app.\n3.Supported Chinese dictionary file\n4.Fixed some BUG.</string>
     
 </resources>

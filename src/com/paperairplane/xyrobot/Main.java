@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.Menu;
@@ -42,22 +41,18 @@ public class Main extends Activity {
 				ProgressBar PB = (ProgressBar) findViewById(R.id.progressBar1);
 				
 				UserMsg = editText1.getText().toString();
+				editText1.setText(""); //清空EditText
 				
 				/* 检查内容是否为空 */
-				if (UserMsg.equals("")){
-					editText1.setText("");
+				if (UserMsg.trim().equals("")){
 					CreateToast(getString(R.string.AI_StringEMPTY),Toast.LENGTH_SHORT);
 					return;
 				}
 				
-				editText1.setText(""); //清空EditText
 				PB.setVisibility(ProgressBar.VISIBLE); //显示Loading动画
-				
 				/* 聊天记录反馈 */
 				addItem(getString(R.string.myname),UserMsg);
-				addItem(getString(R.string.robotname), 
-				((UserMsg.indexOf("音乐") != -1) & (UserMsg.indexOf("分享") != -1)
-				             ? IWantToShareMusic() : RobotAI.getAnswer(UserMsg)));
+				addItem(getString(R.string.robotname),RobotAI.getAnswer(UserMsg,getApplicationContext()));
 				
 				listView1.setSelection(listView1.getCount()); //保持在视线在最下一个Item
 				PB.setVisibility(ProgressBar.INVISIBLE); //隐藏动画
@@ -68,31 +63,8 @@ public class Main extends Activity {
 	}
 
 	public void addItem(String title,String text){
-		/* 原List显示方法 */
 		data.add(title +": " + text); 
 		((ListView) findViewById(R.id.listView1)).setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data));
-	}
-	
-	public String IWantToShareMusic(){
-		if (StartMusicShare()) {
-			return "好的! 现在使用音乐分享为你服务.";
-		} else {
-			CreateToast("OMG! 您没有安装纸飞机音乐分享!",Toast.LENGTH_SHORT);
-			return "不好意思,暂时不能分享音乐";
-		}
-	}
-	
-	public boolean StartMusicShare(){
-		Intent intent = new Intent();
-        intent = getPackageManager().getLaunchIntentForPackage("com.paperairplane.music.share");
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//..FLAG_ACTIVITY_NEW_TASK);                      
-        try {
-         startActivityForResult(intent,0);
-         return true;
-        } catch (ActivityNotFoundException e) {
-         return false;
-        }
 	}
 	
 	/* UI部分 Code */
@@ -137,7 +109,7 @@ public class Main extends Activity {
 					dialogAbout.cancel();
 					break;
 				case DialogInterface.BUTTON_NEGATIVE:
-					Uri uri = Uri.parse("http://m-sky.lofter.com");
+					Uri uri = Uri.parse("http://pap.xp3.biz");
 					Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 					startActivity(intent);
 					break;

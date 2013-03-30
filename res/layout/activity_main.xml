@@ -13,7 +13,8 @@
         android:layout_toLeftOf="@+id/button1"
         android:background="@drawable/textfield_activated_holo_light"
         android:ems="10"
-        android:hint="@string/et1_hint" >
+        android:hint="@string/et1_hint"
+        android:textSize="@dimen/EditTextSize" >
 
         <requestFocus />
     </EditText>
@@ -26,7 +27,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/editText1"
         android:background="@drawable/holo_button"
-        android:text="@string/btn1_text" />
+        android:text="@string/btn1_text"
+        android:textSize="@dimen/EditTextSize" />
 
     <ListView
         android:id="@+id/listView1"
