@@ -25,12 +25,18 @@ public class Extrabase {
 	private static boolean isInit = false;
 	
 	public static void InitData() {
-		itemQ = new ArrayList<ArrayList<String>>();
-		itemA = new ArrayList<ArrayList<String>>();
-		File f = new File("mnt/sdcard/Xybot");
-		List<File> fileList = getFile(f);
+		File f;
+		List<File> fileList = null;
 		int i,FileError = 0;
-		FileCount = fileList.size();
+		try {
+			itemQ = new ArrayList<ArrayList<String>>();
+			itemA = new ArrayList<ArrayList<String>>();
+			f = new File("mnt/sdcard/Xybot");
+			fileList = getFile(f);
+			FileCount = fileList.size();
+		} catch (Exception e){
+			Log.e("Extrabase","不在SD卡根目录下创建Xybot的用户不是好用户！");
+		}
 		for (i=0;i<FileCount;i++){
 			try {
 				InputStreamReader read;
@@ -130,7 +136,7 @@ public class Extrabase {
 		return RobotAI.BaseNotFound;
 	}
 	
-	private static String ReplaceStr(String str1,String str2,String str3){
+	public static String ReplaceStr(String str1,String str2,String str3){
 		String result = str1;
 		result = str1.substring(0, str1.indexOf(str2))
 				 + str3

@@ -10,11 +10,16 @@
     <string name="AI_unknow">额..抱歉!我无法回答你的问题。</string>
     <string name="AI_hello">你好!我叫小云.</string>
     <string name="AI_LoadFileFailed">加载文件失败</string>
-    <string name="AI_StringEMPTY">请输入内容</string><string name="menu_exit">退出</string>
+    <string name="AI_StringEMPTY">请输入内容</string>
+    <string name="menu_exit">退出</string>
+    <string name="menu_areyouwant2exit">你真的要退出吗？</string>
     <string name="menu_reload">重新加载词库</string>
     <string name="menu_about">关于小云机器人</string>
-    <string name="about_context">小云机器人 1.0.1 Beta r7\n纸飞机移动应用出品\n程序开发: Fython\n美工: Fython\n新浪微博:@Sudo-\n邮箱:fython@163.com\n特别鸣谢@HarryChen-SIGKILL- @姚沛然 等大神指导\n欢迎使用本软件,欢迎多提意见</string>
+    <string name="exit_yes">因为你太笨了</string>
+    <string name="exit_no">哦，那再留会儿。</string>
+    <string name="exit_context">为什么不留一会儿呢？</string>
+    <string name="about_context">小云机器人 1.0.2 Beta r7\n纸飞机移动应用出品\n程序开发: Fython\n美工: Fython\n新浪微博:@Sudo-\n邮箱:fython@163.com\n\n特别鸣谢@HarryChen-SIGKILL- @姚沛然 等大神指导\n欢迎使用本软件,欢迎多提意见</string>
     <string name="about_contact">访问作者博客</string>
-    <string name="whatsnew"/>
+    <string name="whatsnew">1.0.2终于发布了！支持翻译，可以控制打电话了。</string>
     
 </resources>
