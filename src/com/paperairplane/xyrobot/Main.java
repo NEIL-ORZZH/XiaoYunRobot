@@ -5,8 +5,12 @@ import java.util.List;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.Menu;
@@ -20,29 +24,49 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+@SuppressLint("HandlerLeak")
 public class Main extends Activity {
 
 	static int i=0;
-	String UserMsg;
+	Context mc;
+	String UserMsg,AIMsg;
 	static String AI_UnknowMsg;
 	List<String> data = new ArrayList<String>();
 	static List<String> Title,Text = new ArrayList<String>();
 	AlertDialog dialogAbout,dialogExit;
 	
+	Handler handler = new Handler(){
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case 1:
+				data.add(AIMsg);
+				((ListView) findViewById(R.id.listView1)).setAdapter(new ArrayAdapter<String>(mc, android.R.layout.simple_list_item_1,data));
+				((ListView) findViewById(R.id.listView1)).setSelection(((ListView) findViewById(R.id.listView1)).getCount()); //保持在视线在最下一个Item
+				((ProgressBar) findViewById(R.id.progressBar1)).setVisibility(ProgressBar.VISIBLE); //隐藏动画
+				break;
+			case 2:
+				data.add(AIMsg);
+				((ListView) findViewById(R.id.listView1)).setAdapter(new ArrayAdapter<String>(mc, android.R.layout.simple_list_item_1,data));
+				((ListView) findViewById(R.id.listView1)).setSelection(((ListView) findViewById(R.id.listView1)).getCount()); //保持在视线在最下一个Item
+				((ProgressBar) findViewById(R.id.progressBar1)).setVisibility(ProgressBar.INVISIBLE); //隐藏动画
+			break;
+			}
+		}
+	};
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		mc = getApplicationContext();
+		
 		((Button) findViewById(R.id.button1)).setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
 				EditText editText1 = (EditText) findViewById(R.id.editText1);
-				final ListView listView1 = (ListView) findViewById(R.id.listView1);
-				final ProgressBar PB = (ProgressBar) findViewById(R.id.progressBar1);
 				
 				UserMsg = editText1.getText().toString();
 				editText1.setText(""); //清空EditText
-				PB.setVisibility(ProgressBar.VISIBLE); //显示Loading动画
 				
 				Thread thread = new Thread(){
 					public void run(){
@@ -53,23 +77,24 @@ public class Main extends Activity {
 							}
 						
 						/* 聊天记录反馈 */
-						addItem(getString(R.string.myname),UserMsg);
-						addItem(getString(R.string.robotname),RobotAI.getAnswer(UserMsg,getApplicationContext()));
+						addItem(handler,getString(R.string.myname),UserMsg,true);
+						addItem(handler,getString(R.string.robotname),RobotAI.getAnswer(UserMsg,getApplicationContext()),false);
 						
-						listView1.setSelection(listView1.getCount()); //保持在视线在最下一个Item
-						PB.setVisibility(ProgressBar.INVISIBLE); //隐藏动画
 					}
 				};
-				thread.run();
+				thread.start();
+				
 			}
 		});
 		AI_UnknowMsg = getString(R.string.AI_unknow);
-		addItem(getString(R.string.robotname),getString(R.string.AI_hello));
+		addItem(handler,getString(R.string.robotname),getString(R.string.AI_hello),false);
 	}
 
-	public void addItem(String title,String text){
-		data.add(title +": " + text); 
-		((ListView) findViewById(R.id.listView1)).setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data));
+	public void addItem(Handler handler,String title,String text,boolean showAni){
+		Message msg = new Message();
+		if (showAni) msg.what = 1; else msg.what = 2;
+		AIMsg = title +": " + text;
+		handler.sendMessage(msg);
 	}
 	
 	/* UI部分 Code */

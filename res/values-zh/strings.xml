@@ -18,8 +18,8 @@
     <string name="exit_yes">因为你太笨了</string>
     <string name="exit_no">哦，那再留会儿。</string>
     <string name="exit_context">为什么不留一会儿呢？</string>
-    <string name="about_context">小云机器人 1.0.2 Beta r7\n纸飞机移动应用出品\n程序开发: Fython\n美工: Fython\n新浪微博:@Sudo-\n邮箱:fython@163.com\n\n特别鸣谢@HarryChen-SIGKILL- @姚沛然 等大神指导\n欢迎使用本软件,欢迎多提意见</string>
+    <string name="about_context">小云机器人 1.0.2 Beta 2\n纸飞机移动应用出品\n程序开发: Fython\n美工: Fython\n新浪微博:@Sudo-\n邮箱:fython@163.com\n\n特别鸣谢@HarryChen-SIGKILL- @姚沛然 等大神指导\n欢迎使用本软件,欢迎多提意见</string>
     <string name="about_contact">访问作者博客</string>
-    <string name="whatsnew">1.0.2终于发布了！支持翻译，可以控制打电话了。</string>
+    <string name="whatsnew">修复了一系列的BUG，哈哈，4.0可以翻译了吧！？</string>
     
 </resources>

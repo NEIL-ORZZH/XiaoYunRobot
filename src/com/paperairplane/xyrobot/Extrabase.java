@@ -28,15 +28,13 @@ public class Extrabase {
 		File f;
 		List<File> fileList = null;
 		int i,FileError = 0;
-		try {
-			itemQ = new ArrayList<ArrayList<String>>();
-			itemA = new ArrayList<ArrayList<String>>();
-			f = new File("mnt/sdcard/Xybot");
-			fileList = getFile(f);
-			FileCount = fileList.size();
-		} catch (Exception e){
-			Log.e("Extrabase","不在SD卡根目录下创建Xybot的用户不是好用户！");
-		}
+		checkPath();
+		itemQ = new ArrayList<ArrayList<String>>();
+		itemA = new ArrayList<ArrayList<String>>();
+		f = new File("mnt/sdcard/Xybot");
+		fileList = getFile(f);
+		FileCount = fileList.size();
+		
 		for (i=0;i<FileCount;i++){
 			try {
 				InputStreamReader read;
@@ -99,6 +97,17 @@ public class Extrabase {
 		};
 		FileCount -= FileError;
 		isInit = true;
+	}
+	
+	private static void checkPath(){
+		try{
+		File file = new File("mnt/sdcard/Xybot");
+		if (!file.exists()) {
+			file.mkdir();
+		}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	public static String getAnswer(String Q){
