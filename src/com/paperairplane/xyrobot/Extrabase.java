@@ -135,6 +135,9 @@ public class Extrabase {
 				if (result.indexOf("{CPU}") != -1){
 					result = ReplaceStr(result,"{CPU}",Build.CPU_ABI);
 				}
+				if (result.indexOf("{DEVICE}") != -1){
+					result = ReplaceStr(result,"{DEVICE}",Build.DEVICE);
+				}
 				if (result.indexOf("{SystemVersion}") != -1){
 					result = ReplaceStr(result,"{SystemVersion}",Build.VERSION.RELEASE);
 				}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">XiaoYun</string>
+    <string name="app_name">小云机器人</string>
     <string name="menu_settings">About this app</string>
     <string name="myname">Me</string>
     <string name="robotname">XiaoYun</string>

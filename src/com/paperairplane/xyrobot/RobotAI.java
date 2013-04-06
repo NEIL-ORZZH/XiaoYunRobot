@@ -5,115 +5,17 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
-
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
+import android.os.Build;
+import android.telephony.TelephonyManager;
 
 public class RobotAI {
 	
 	static int GoodMorning_events,IhadACold = 0; //事件记录器
-	public static String BaseNotFound = "f91e5ce9c2fef8063eb44df100c2d53c"; //猜猜这是什么 哈哈哈
+	public static String BaseNotFound = "f91e5ce9c2fef8063eb44df100c2d53c";
 	
-	private static int FindStr(String str0,String str1){
+	public static int FindStr(String str0,String str1){
 		return str0.indexOf(str1);
-	}
-
-	private static String getDJS(String date) throws ParseException{
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Date thatday = sdf.parse(date);
-		Date nowtime = Calendar.getInstance().getTime();
-		long time  = (thatday.getTime()-nowtime.getTime())/1000/60/60/24;
-		return Long.toString(time);
-	}
-	
-	public static boolean StartAndroidAPP(String string,Context context){
-		try {
-			Intent intent = new Intent();
-			intent = context.getPackageManager().getLaunchIntentForPackage(string);
-			intent.setAction(Intent.ACTION_VIEW);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			context.startActivity(intent);
-        	return true;
-        } catch (Exception e) {
-        	return false;
-        }
-	}
-	
-	public static boolean PhoneTo(String str,Context context){
-		try{
-			Intent intent = new Intent(Intent.ACTION_CALL,Uri.parse("tel:"+str));
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			context.startActivity(intent);
-			return true;
-		} catch(Exception e){
-			Log.v("RobotAI","NowNumber:"+str);
-			e.printStackTrace();
-			return false;
-		}
-	}
-	
-	public static String Translate(String src,String from,String to){
-		String json,result = null;
-		HttpResponse httpResponse;
-		try {
-			HttpGet httpGet = new HttpGet("http://openapi.baidu.com/public/2.0/bmt/translate?client_id=ffidX2b30phZThDxFHsOj1W9&q="+src+"&from="+from+"&to="+to);
-			Log.v("Translate","即将查询的地址:"+"http://openapi.baidu.com/public/2.0/bmt/translate?client_id=ffidX2b30phZThDxFHsOj1W9&q="+src+"&from="+from+"&to="+to);
-			httpResponse = new DefaultHttpClient().execute(httpGet);
-			Log.v("Translate", "进行的HTTP GET返回状态为"+ httpResponse.getStatusLine().getStatusCode());
-			if (httpResponse.getStatusLine().getStatusCode() == 200) {
-				json = EntityUtils.toString(httpResponse.getEntity());
-				Log.v("Translate", "返回结果为" + json);
-			} else {
-				json = null;
-				return "翻译失败，读取网络参数错误";
-			}
-		} catch (Exception e) {
-			Log.v("Translate", "抛出错误" + e.getMessage());
-			e.printStackTrace();
-			json = null;
-			return "翻译失败，请检查您的网络设置";
-		}
-		try {
-			JSONTokener jsonParser = new JSONTokener(json); 
-			JSONObject person = (JSONObject) jsonParser.nextValue();
-			JSONArray array = person.getJSONArray("trans_result");
-			int i = 0;
-			String json2 = null;
-			result = "翻译结果:\n";
-			for (i=0;i<array.length();i++){
-				json2 = array.get(i).toString();
-				JSONTokener jsonParser2 = new JSONTokener(json2); 
-				JSONObject person2 = (JSONObject) jsonParser2.nextValue();
-				result = result + "原文:" + person2.getString("src") + "\n译文:" + person2.getString("dst") + "\n";
-			}
-			return result+"\n由百度提供翻译服务\n(http://fanyi.baidu.com)";
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return "翻译失败，服务端返回了错误的信息";
-		}
-	}
-	
-	public static boolean OpenURI(String uriString,Context context){
-		try{
-			Uri uri = Uri.parse(uriString);
-			Intent intent = new Intent(Intent.ACTION_VIEW, uri).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			context.startActivity(intent);
-			return true;
-		} catch (Exception e){
-			Log.e("RobotAI","尝试访问该地址时出现错误:"+uriString);
-			e.printStackTrace();
-			return false;
-		}
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -121,15 +23,18 @@ public class RobotAI {
 		int NowHours = Calendar.getInstance().getTime().getHours();
 		int NowYears = Calendar.getInstance().getTime().getYear();
 		
-		/* 自定义问答库 */
-		String extra = Extrabase.getAnswer(question);
-		if (extra != BaseNotFound){
-			return extra;
-		}
 		
 		/* 实用部分 */
 		if ((question.indexOf("音乐") != -1) & (question.indexOf("分享") != -1)){
-			return StartAndroidAPP("com.paperairplane.music.share",context) ? "启动成功！现在使用音乐分享为您服务。" : "抱歉，您没有安装音乐分享不可以使用本服务。请登录http://www.paperairplane.tk";
+			return Tools.StartAndroidAPP("com.paperairplane.music.share",context) ? "启动成功！现在使用音乐分享为您服务。" : "抱歉，您没有安装音乐分享不可以使用本服务。请登录http://www.paperairplane.tk";
+		}
+		if ((question.indexOf("配置") != -1) | (question.indexOf("CPU") != -1) | (question.indexOf("手机") != -1)){
+			String result =
+					"该Android 手机配置信息如下\nCPU:"+Build.CPU_ABI
+					+" 系统版本:"+Build.VERSION.RELEASE
+					+"\nSDK版本:"+((Integer) Build.VERSION.SDK_INT).toString()+"\n机主号码:";
+			String phonenumber = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
+			return result+phonenumber;
 		}
 		if ((question.indexOf("打电话") != -1)|(question.indexOf("打给") != -1)){
 			String str1 = question;
@@ -137,13 +42,13 @@ public class RobotAI {
 			if (question.indexOf("电话") != -1) str1 = Extrabase.ReplaceStr(str1, "电话", "");
 			if (question.indexOf("给") != -1) str1 = Extrabase.ReplaceStr(str1, "给", "");
 			if (question.indexOf("到") != -1) str1 = Extrabase.ReplaceStr(str1, "到", "");
-			return PhoneTo(str1.trim(),context) ? "现在打电话给"+str1 : "拨打失败。";
+			return Tools.PhoneTo(str1.trim(),context) ? "现在打电话给"+str1 : "拨打失败。";
 		}
 		if ((question.indexOf("搜索") != -1)|(question.indexOf("百度") != -1)){
 			String str1 = question;
 			if (question.indexOf("搜索") != -1) str1 = Extrabase.ReplaceStr(str1, "搜索", "");
 			if (question.indexOf("百度") != -1) str1 = Extrabase.ReplaceStr(str1, "百度", "");
-			return OpenURI("http://m.baidu.com/search?bd_page_type=1?word="+str1,context) ? "现在搜索" + str1 : "额……启动浏览器时出现了问题。";
+			return Tools.OpenURI("www.baidu.com/baidu?word="+str1+"&tn=xiaoyunrobot",context) ? "现在搜索" + str1 : "额……启动浏览器时出现了问题。";
 		}
 		if (question.indexOf("翻译") != -1){
 			String str1 = question;
@@ -175,7 +80,14 @@ public class RobotAI {
 				to = "zh";
 				str1 = Extrabase.ReplaceStr(str1, "成中文", "");
 			}
-			return Translate(str1,from,to);
+			return Tools.Translate(str1,from,to);
+		}
+
+		
+		/* 自定义问答库 */
+		String extra = Extrabase.getAnswer(question);
+		if (extra != BaseNotFound){
+			return extra;
 		}
 		
 		/* 预置的问答库 */
@@ -223,8 +135,11 @@ public class RobotAI {
 		}
 		if ((FindStr(question,"烧饼") != -1)|(FindStr(question,"fython") != -1))return Math.round(Math.random()) != 0 ? "他是个帅哥，哈哈哈哈哈哈哈哈。(纯属无聊非自恋啊)" : "他很傻的，一般人我不说出来...(嘘！别传出去)";
 		if ((FindStr(question,"你好") != -1)|(FindStr(question,"嗨") != -1))return Math.round(Math.random()) != 0 ? "嗨！" : "你好！";
-		if ((FindStr(question,"你好") != -1)|(FindStr(question,"嗨") != -1)) return Math.round(Math.random()) != 0 ? "嗨！" : "你好！";
+		if ((FindStr(question,"喂") != -1)|(FindStr(question,"嘿") != -1)) return Math.round(Math.random()) != 0 ? "干嘛！？" : "-  - Can I help you?";
 		if ((FindStr(question,"在干") != -1)|(FindStr(question,"做什么") != -1))return Math.round(Math.random()) != 0 ? "陪你聊天呗。" : "在跟一个类人猿聊天";
+		if (((FindStr(question,"切") != -1)|(FindStr(question,"去") != -1)) & question.length() <= 3) return Math.round(Math.random()) != 0 ? "555..." : "额。。";
+		if (((FindStr(question,"额") != -1)|(FindStr(question,"呃") != -1)) & question.length() <= 3) return "无语了吧";
+		if (FindStr(question,"饿") != -1 & question.length() <= 3) return "饿了吃饭去。";
 		if ((FindStr(question,"哈哈") != -1)|(FindStr(question,"嘻嘻") != -1)|(FindStr(question,"嘿嘿") != -1)){
 			if (GoodMorning_events == 1){
 				GoodMorning_events = -1;
@@ -307,21 +222,22 @@ public class RobotAI {
 			}
 			return "今天是 "+formatter.format(date);
 		}
+		
 		if (FindStr(question,"中考") != -1){
 			try {
-				return "离中考还有 "+getDJS("2013-6-19")+" 天!加油!";
+				return "离中考还有 "+Tools.getDJS("2013-6-19")+" 天!加油!";
 			} catch (ParseException e) {
 				return "";
 			}
 		}
-
 		if (FindStr(question,"高考") != -1){
 			try {
-				return "离高考还有 "+getDJS("2013-6-7")+" 天!加油!";
+				return "离高考还有 "+Tools.getDJS("2013-6-7")+" 天!加油!";
 			} catch (ParseException e) {
 				return "";
 			}
 		}
+		
 		if ((FindStr(question,"我去年买了个表") != -1)|
 			(FindStr(question,"逼") != -1)|
 			(FindStr(question,"fuck") != -1)|
