@@ -74,7 +74,7 @@ public class Tools {
 	public static String Translate(String src,String from,String to){
 		String json,result = null;
 		HttpResponse httpResponse;
-		if(src.charAt(0) == ' ') {
+		if(src.length() > 0 && src.charAt(0) == ' ') {
 			src = src.substring(1);
 		}
 		try {
