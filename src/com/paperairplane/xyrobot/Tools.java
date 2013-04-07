@@ -74,6 +74,9 @@ public class Tools {
 	public static String Translate(String src,String from,String to){
 		String json,result = null;
 		HttpResponse httpResponse;
+		if(src.charAt(0) == ' ') {
+			src = src.substring(1);
+		}
 		try {
 			HttpGet httpGet = new HttpGet("http://openapi.baidu.com/public/2.0/bmt/translate?client_id=ffidX2b30phZThDxFHsOj1W9&q="+src+"&from="+from+"&to="+to);
 			Log.v("Translate","即将查询的地址:"+"http://openapi.baidu.com/public/2.0/bmt/translate?client_id=ffidX2b30phZThDxFHsOj1W9&q="+src+"&from="+from+"&to="+to);
