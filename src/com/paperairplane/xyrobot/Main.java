@@ -1,5 +1,6 @@
 package com.paperairplane.xyrobot;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,14 +12,19 @@ import android.os.Message;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,7 +39,7 @@ import com.baidu.mobstat.StatService;
 @SuppressLint("HandlerLeak")
 public class Main extends Activity {
 
-	static int i=0;
+	static int i=0 , clickedlist=0;
 	static Context mc;
 	private String UserMsg,AIMsg1,AIMsg2;
 	public static String AI_UnknowMsg,update_text,update_url;
@@ -43,17 +49,26 @@ public class Main extends Activity {
 	public Handler handler = new Handler(){
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case 1:
+			case C.handlermsg.addItem_human:
 				data.add(AIMsg1);
 				((ListView) findViewById(R.id.listView1)).setAdapter(new ArrayAdapter<String>(mc, android.R.layout.simple_list_item_1,data));
 				((ListView) findViewById(R.id.listView1)).setSelection(((ListView) findViewById(R.id.listView1)).getCount()); //保持在视线在最下一个Item
 				((ProgressBar) findViewById(R.id.progressBar1)).setVisibility(ProgressBar.VISIBLE); //隐藏动画
 				break;
-			case 2:
+			case C.handlermsg.addItem_robot:
 				data.add(AIMsg2);
 				((ListView) findViewById(R.id.listView1)).setAdapter(new ArrayAdapter<String>(mc, android.R.layout.simple_list_item_1,data));
 				((ListView) findViewById(R.id.listView1)).setSelection(((ListView) findViewById(R.id.listView1)).getCount()); //保持在视线在最下一个Item
 				((ProgressBar) findViewById(R.id.progressBar1)).setVisibility(ProgressBar.INVISIBLE); //隐藏动画
+				break;
+			case C.handlermsg.internet_error:
+				Toast.makeText(mc, mc.getString(R.string.internet_error), Toast.LENGTH_SHORT).show();
+				break;
+			case C.handlermsg.version_least:
+				Toast.makeText(mc, mc.getString(R.string.version_least), Toast.LENGTH_SHORT).show();
+				break;
+			case C.handlermsg.version_new:
+				updateApp((String[]) msg.obj);
 				break;
 			}
 		}
@@ -64,11 +79,15 @@ public class Main extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		mc = getApplicationContext();
-		StatService.setAppKey(C.baidu_tongji_key);
-		StatService.setAppChannel(C.baidu_tongji_market);
-		StatService.setOn(this,StatService.EXCEPTION_LOG);
-		StatService.setSendLogStrategy(this, SendStrategyEnum.APP_START, 1);
 		
+		try{
+			StatService.setAppKey(C.baidu_tongji_key);
+			StatService.setAppChannel(C.baidu_tongji_market);
+			StatService.setOn(this,StatService.EXCEPTION_LOG);
+			StatService.setSendLogStrategy(this, SendStrategyEnum.APP_START, 1);
+			} catch (Exception e){
+				Log.e("baidu tongji","OH!shit.还好我躲过了FC");
+		}
 		
 		((Button) findViewById(R.id.button1)).setOnClickListener(new OnClickListener(){
 			@Override
@@ -106,24 +125,37 @@ public class Main extends Activity {
 			
 		});
 		
+		((ListView) findViewById(R.id.listView1)).setOnItemLongClickListener(new OnItemLongClickListener() {
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				clickedlist = position;
+				showListMenu(data.get(position));
+				return false;
+			    }
+			});
+		
 		AI_UnknowMsg = getString(R.string.AI_unknow);
 		addItem(handler,getString(R.string.robotname),getString(R.string.AI_hello),false);
 		
 		new Thread(){
 			public void run(){
 				Looper.prepare();
-				Tools.update(mc,handler);
+				try {
+					Tools.update(handler,getPackageManager().getPackageInfo(getPackageName(), 0).versionCode,mc);
+				} catch (NameNotFoundException e) {
+					e.printStackTrace();
+				}
 			}
 		}.start();
+		
 	}
 
 	public void addItem(Handler handler,String title,String text,boolean showAni){
 		if (showAni) {
 			AIMsg1 = title +": " + text;
-			handler.sendEmptyMessage(1);
+			handler.sendEmptyMessage(C.handlermsg.addItem_human);
 		} else {
 			AIMsg2 = title +": " + text;
-			handler.sendEmptyMessage(2);
+			handler.sendEmptyMessage(C.handlermsg.addItem_robot);
 		}
 	}
 	
@@ -156,6 +188,12 @@ public class Main extends Activity {
 	}
 	
 	private void showAbout(){
+		String version = "Unknow";
+		try {
+			version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName + "(" + getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + ")";
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
 		DialogInterface.OnClickListener listenerAbout = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
@@ -174,7 +212,7 @@ public class Main extends Activity {
 		dialogAbout = new AlertDialog.Builder(this)
 		.setIcon(R.drawable.ic_launcher)
 		.setTitle(getString(R.string.menu_about))
-		.setMessage(getString(R.string.about_context))
+		.setMessage(Extrabase.ReplaceStr(getString(R.string.about_context),"[Version]",version))
 		.setPositiveButton(android.R.string.ok, listenerAbout)
 		.setNegativeButton(R.string.about_contact, listenerAbout)
 		.show();
@@ -203,6 +241,45 @@ public class Main extends Activity {
 		.setNegativeButton(R.string.exit_no, listenerAbout)
 		.show();
 	}
+
+	@SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
+	private void showListMenu(String text){
+		DialogInterface.OnClickListener listenerAbout = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int whichButton) {
+				switch (whichButton) {
+				case DialogInterface.BUTTON_POSITIVE:
+					int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+					if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+						android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+						ClipData clip = ClipData.newPlainText("label", data.get(clickedlist));
+						clipboard.setPrimaryClip(clip);
+						} else {
+							android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+							clipboard.setText(data.get(clickedlist));
+						}
+					break;
+				case DialogInterface.BUTTON_NEGATIVE:
+					Intent intent = new Intent(Intent.ACTION_SEND);
+					intent.setType("text/plain");
+					intent.putExtra(Intent.EXTRA_SUBJECT , getString(R.string.app_name));
+					intent.putExtra(Intent.EXTRA_TEXT ,
+							        getString(R.string.shareinfo_left) + data.get(clickedlist) + getString(R.string.shareinfo_right));
+					startActivity(Intent.createChooser(intent,getString(R.string.how_to_share)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+					break;
+				}
+			}
+		};
+		
+		new AlertDialog.Builder(this)
+		.setIcon(android.R.drawable.ic_dialog_alert)
+		.setTitle(getString(R.string.dialogList_title))
+		.setMessage(text)
+		.setPositiveButton(R.string.copy_str, listenerAbout)
+		.setNegativeButton(R.string.share_str, listenerAbout)
+		.show();
+	}
 	
 	public void onResume() {
 		super.onResume();
@@ -224,4 +301,26 @@ public class Main extends Activity {
 	    
 	}
 	
+	private void updateApp(final String[] info) {
+		new AlertDialog.Builder(Main.this)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setTitle(R.string.update_found)
+				.setMessage(info[C.ArraySubscript.UPDATE_INFO])
+				.setPositiveButton(R.string.update_download, new DialogInterface.OnClickListener() {				
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						Uri uri = Uri.parse(info[C.ArraySubscript.DOWNLOAD_URL]);
+						Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+						startActivity(intent);
+					}
+				})
+				.setNegativeButton(R.string.update_nothanks, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						
+					}
+				})
+				.show();
+
+	}
 }

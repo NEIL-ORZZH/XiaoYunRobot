@@ -2,9 +2,11 @@ package com.paperairplane.xyrobot;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
+import android.widget.TextView;
 
 public class splashScreen extends Activity {
 
@@ -13,6 +15,15 @@ public class splashScreen extends Activity {
         super.onCreate(icicle);
         setContentView(R.layout.splash);
 
+        try {
+			((TextView) findViewById(R.id.textView2)).setText(
+					getPackageManager().getPackageInfo(getPackageName(), 0).versionName
+					+ "  (" + getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + ")"
+					);
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+        
         new Thread(){
         	public void run(){
         		Extrabase.InitData();
@@ -25,7 +36,7 @@ public class splashScreen extends Activity {
                 splashScreen.this.startActivity(mainIntent);
                 splashScreen.this.finish();
             }
-        }, 2000);
+        }, 1500);
 
     }
 	

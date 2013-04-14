@@ -17,11 +17,10 @@ import org.json.JSONTokener;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 public class Tools {
 	public static String getDJS(String date) throws ParseException{
@@ -78,8 +77,8 @@ public class Tools {
 			src = src.substring(1);
 		}
 		try {
-			HttpGet httpGet = new HttpGet("http://openapi.baidu.com/public/2.0/bmt/translate?client_id=ffidX2b30phZThDxFHsOj1W9&q="+src+"&from="+from+"&to="+to);
-			Log.v("Translate","即将查询的地址:"+"http://openapi.baidu.com/public/2.0/bmt/translate?client_id=ffidX2b30phZThDxFHsOj1W9&q="+src+"&from="+from+"&to="+to);
+			HttpGet httpGet = new HttpGet("http://openapi.baidu.com/public/2.0/bmt/translate?client_id="+C.baidu_app_key+"&q="+src+"&from="+from+"&to="+to);
+			Log.v("Translate","即将查询的地址:"+"http://openapi.baidu.com/public/2.0/bmt/translate?client_id="+C.baidu_app_key+"&q="+src+"&from="+from+"&to="+to);
 			httpResponse = new DefaultHttpClient().execute(httpGet);
 			Log.v("Translate", "进行的HTTP GET返回状态为"+ httpResponse.getStatusLine().getStatusCode());
 			if (httpResponse.getStatusLine().getStatusCode() == 200) {
@@ -106,82 +105,60 @@ public class Tools {
 				json2 = array.get(i).toString();
 				JSONTokener jsonParser2 = new JSONTokener(json2); 
 				JSONObject person2 = (JSONObject) jsonParser2.nextValue();
-				result = result + "原文:" + person2.getString("src") + "\n译文:" + person2.getString("dst") + "\n";
+				result = result + "原文:" + person2.getString("src") + "\n译文:" + person2.getString("dst");
 			}
-			return result+"\n由百度提供翻译服务\n(http://fanyi.baidu.com)";
+			return result;
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return "翻译失败，服务端返回了错误的信息";
 		}
 	}
 	
-	public static void update(Context context,Handler handler){
+	public static void update(Handler handler, int versionCode, Context context) {
 		String json = null;
-		int newversion = 0;
 		HttpResponse httpResponse;
 		try {
 			HttpGet httpGet = new HttpGet(C.update_ver_url);
 			httpResponse = new DefaultHttpClient().execute(httpGet);
-			Log.v("Translate", "进行的HTTP GET返回状态为"+ httpResponse.getStatusLine().getStatusCode());
 			if (httpResponse.getStatusLine().getStatusCode() == 200) {
 				json = EntityUtils.toString(httpResponse.getEntity());
-				Log.v("Translate", "返回结果为" + json);
-				} else {
-					json = null;
-					Log.e("update","Server Error"+httpResponse.getStatusLine().getStatusCode());
-				}
-		} catch (Exception e){
-			e.printStackTrace();
-			Toast.makeText(context, "暂无更新", Toast.LENGTH_SHORT).show();
-			return;
-		}
-		
-		try {
-			JSONTokener jsonParser = new JSONTokener(json); 
-			JSONObject person = (JSONObject) jsonParser.nextValue();
-			newversion = person.getInt("version");
-			Log.i("update",person.toString());
-		} catch (JSONException e) {
-			e.printStackTrace();
-			Toast.makeText(context, "读取错误", Toast.LENGTH_SHORT).show();
-			return;
-		}
-		
-		try {
-			int version = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
-			if (version < newversion) {
-				try {
-					HttpGet httpGet = new HttpGet(C.update_info_url);
-					httpResponse = new DefaultHttpClient().execute(httpGet);
-					Log.v("Translate", "进行的HTTP GET返回状态为"+ httpResponse.getStatusLine().getStatusCode());
-					if (httpResponse.getStatusLine().getStatusCode() == 200) {
-						json = EntityUtils.toString(httpResponse.getEntity());
-						Log.v("Translate", "返回结果为" + json);
-						} else {
-							json = null;
-							Log.e("update","Server Error"+httpResponse.getStatusLine().getStatusCode());
-						}
-				} catch (Exception e){
-					e.printStackTrace();
-					return;
-				}
-				try {
-					JSONTokener jsonParser = new JSONTokener(json); 
-					JSONObject person = (JSONObject) jsonParser.nextValue();
-					Main.update_text = person.getString("text");
-					Main.update_url = person.getString("url");
-					Log.i("update",person.toString());
-				} catch (JSONException e) {
-					e.printStackTrace();
-					return;
-				}
 			} else {
-				Toast.makeText(context, "已更新到最新版本", Toast.LENGTH_SHORT).show();
+				json = null;
+				handler.sendEmptyMessage(3);
 				return;
 			}
-			
-		} catch (NameNotFoundException e) {
+		} catch (Exception e) {
+			handler.sendEmptyMessage(C.handlermsg.internet_error);
 			e.printStackTrace();
+			json = null;
+			return;
+		}
+		try {
+			JSONObject rootObject = new JSONObject(json);
+			int remoteVersion = rootObject.getInt("versionCode");
+			if (remoteVersion <= versionCode) {
+				handler.sendEmptyMessage(C.handlermsg.version_least);
+			} else if (remoteVersion > versionCode) {
+				StringBuffer sb = new StringBuffer(
+						context.getString(R.string.update_remote_version));
+				sb.append(rootObject
+						.getString("versionName") + "\n");
+				sb.append(context.getString(R.string.update_whats_new));
+				sb.append(rootObject
+						.getString("whatsNew")+"\n");
+				sb.append(context.getString(R.string.update_release_date));
+				sb.append(rootObject
+						.getString("releaseDate"));
+				String[] info = new String[2];
+				info[C.ArraySubscript.UPDATE_INFO] = sb.toString();
+				info[C.ArraySubscript.DOWNLOAD_URL] = rootObject
+						.getString("downloadUrl");
+				Message m = handler.obtainMessage(C.handlermsg.version_new,info);
+				handler.sendMessage(m);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			handler.sendEmptyMessage(C.handlermsg.internet_error);
 		}
 	}
 	
