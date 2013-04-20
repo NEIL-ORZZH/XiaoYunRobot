@@ -39,10 +39,26 @@ public class RobotAI {
 			if (question.indexOf("百度") != -1) str1 = Extrabase.ReplaceStr(str1, "百度", "");
 			return Tools.OpenURI("www.baidu.com/baidu?word="+str1+"&tn=xiaoyunrobot",context) ? "现在搜索" + str1 : "额……启动浏览器时出现了问题。";
 		}
-		if (question.indexOf("翻译") != -1){
+		if (question.indexOf("翻译") != -1 | question.toLowerCase().indexOf("translate") != -1){
 			String str1 = question;
 			String from = "auto" , to = "auto";
 			if (question.indexOf("翻译") != -1) str1 = Extrabase.ReplaceStr(str1, "翻译", "");
+			if (question.toLowerCase().indexOf("translate") != -1)
+				str1 = Extrabase.ReplaceStr(str1.toLowerCase(), "translate", "");
+			if (question.toLowerCase().indexOf("into japanese") != -1) {
+				from = "zh";
+				to = "jp";
+				str1 = Extrabase.ReplaceStr(str1.toLowerCase(), "into japanese", "");
+			}
+			if (question.toLowerCase().indexOf("into chinese") != -1) {
+				from = "en";
+				to = "zh";
+				str1 = Extrabase.ReplaceStr(str1.toLowerCase(), "into chinese", "");
+			}
+			if (question.toLowerCase().indexOf("into english") != -1) {
+				to = "en";
+				str1 = Extrabase.ReplaceStr(str1.toLowerCase(), "into english", "");
+			}
 			if (question.indexOf("到日文") != -1) {
 				from = "zh";
 				to = "jp";
@@ -74,7 +90,7 @@ public class RobotAI {
 		if ((question.indexOf("音乐") != -1) & (question.indexOf("分享") != -1)){
 			return Tools.StartAndroidAPP("com.paperairplane.music.share",context) ? "启动成功！现在使用音乐分享为您服务。" : "抱歉，您没有安装音乐分享不可以使用本服务。请登录http://www.paperairplane.tk";
 		}
-		if ((question.indexOf("硬件") != -1) | (question.indexOf("配置") != -1) | (question.indexOf("CPU") != -1)){
+		if ((question.indexOf("硬件") != -1) | (question.indexOf("配置") != -1) | (question.toLowerCase().indexOf("cpu") != -1)){
 			String result =
 					"该Android 手机配置信息如下\n 手机型号:"+Build.MANUFACTURER+" "+Build.MODEL
 					+"\n CPU:"+Build.CPU_ABI
@@ -99,9 +115,6 @@ public class RobotAI {
 		}
 		if ((FindStr(question.toLowerCase(),"what") != -1)| (FindStr(question.toLowerCase(),"u doing")) != -1){
 			return Math.round(Math.random()) != 0 ? "I'm chatting with you." : "Chatting with a boring human.";
-		}
-		if ((question.indexOf("new") != -1) | (question.indexOf("更新") != -1) | (question.indexOf("版本") != -1) | (question.indexOf("说明") != -1)){
-			return "What's New:\n"+context.getString(R.string.whatsnew);
 		}
 		if ((FindStr(question,"早晨") != -1)|(FindStr(question,"早上") != -1 & FindStr(question,"好") != -1)|(FindStr(question,"早安") != -1)){
 			if (GoodMorning_events != 0) return "你刚刚不是说了吗!?";

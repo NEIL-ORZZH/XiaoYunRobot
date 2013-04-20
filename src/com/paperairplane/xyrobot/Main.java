@@ -16,9 +16,12 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -49,6 +53,8 @@ public class Main extends Activity {
 	public static String AI_UnknowMsg,update_text,update_url;
 	private List<String> data = new ArrayList<String>();
 	private AlertDialog dialogAbout,dialogExit;
+	private boolean isSendAfterSpeaking;
+	SharedPreferences config;
 	
 	public Handler handler = new Handler(){
 		public void handleMessage(Message msg) {
@@ -80,6 +86,9 @@ public class Main extends Activity {
 			case C.handlermsg.voice_api_gotmsg:
 				EditText et = (EditText) findViewById(R.id.editText1);
 				et.setText(msg.getData().getString("text"));
+				if (isSendAfterSpeaking) {
+					SendAction();
+				}
 				break;
 			}
 		}
@@ -90,6 +99,7 @@ public class Main extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		mc = getApplicationContext();
+		GetConfigAction();
 		
 		// API 初始化
 		try{
@@ -105,36 +115,8 @@ public class Main extends Activity {
 		((Button) findViewById(R.id.button1)).setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
-				EditText editText1 = (EditText) findViewById(R.id.editText1);
-				
-				UserMsg = editText1.getText().toString();
-				editText1.setText(""); //清空EditText
-
-				/* 检查内容是否为空 */
-				if (UserMsg.trim().equals("")){
-					Toast.makeText(getApplicationContext(),getString(R.string.AI_StringEMPTY),Toast.LENGTH_SHORT).show();
-					return;
-				}
-				
-				new Thread(){
-					public void run(){
-						
-						/* 聊天记录反馈 */
-						addItem(handler,getString(R.string.myname),UserMsg,true);
-						addItem(handler,getString(R.string.robotname),RobotAI.getAnswer(UserMsg,getApplicationContext()),false);
-						
-					}
-				}.start();
-				
+				SendAction();
 			}
-		});
-		
-		((ImageButton) findViewById(R.id.imageButton1)).setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				((EditText) findViewById(R.id.editText1)).setText("");
-			}
-			
 		});
 		
 		((ImageButton) findViewById(R.id.imageButton2)).setOnClickListener(new OnClickListener(){
@@ -169,6 +151,34 @@ public class Main extends Activity {
 		
 	}
 
+	public void SendAction(){
+		EditText editText1 = (EditText) findViewById(R.id.editText1);
+		
+		UserMsg = editText1.getText().toString();
+		editText1.setText(""); //清空EditText
+
+		/* 检查内容是否为空 */
+		if (UserMsg.trim().equals("")){
+			Toast.makeText(getApplicationContext(),getString(R.string.AI_StringEMPTY),Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
+		new Thread(){
+			public void run(){
+				
+				/* 聊天记录反馈 */
+				addItem(handler,getString(R.string.myname),UserMsg,true);
+				addItem(handler,getString(R.string.robotname),RobotAI.getAnswer(UserMsg,getApplicationContext()),false);
+				
+			}
+		}.start();
+	}
+	
+	public void GetConfigAction(){
+		config = getSharedPreferences("config", Context.MODE_APPEND);
+		isSendAfterSpeaking = config.getBoolean("send_after_speaking", true);
+	}
+	
 	public void addItem(Handler handler,String title,String text,boolean showAni){
 		if (showAni) {
 			AIMsg1 = title +": " + text;
@@ -190,18 +200,14 @@ public class Main extends Activity {
 	public boolean onOptionsItemSelected(MenuItem menu) {
 		super.onOptionsItemSelected(menu);
 		switch (menu.getItemId()) {
-		case R.id.menu_settings:
+		case R.id.menu_about:
 			showAbout();
 			break;
-		case R.id.menu_reload:
-			try {
-				Extrabase.InitData();
-			} catch (Exception e) {
-				Toast.makeText(getApplication(),getString(R.string.AI_LoadFileFailed),Toast.LENGTH_SHORT).show();
-			}
+		case R.id.menu_help:
+			showHelp();
 			break;
-		case R.id.menu_exit:
-			showExit();
+		case R.id.menu_settings:
+			showSettings();
 			break;
 		}
 		return true;
@@ -292,17 +298,13 @@ public class Main extends Activity {
 			}
 		};
 		
-		try {
-			new AlertDialog.Builder(this)
-			.setIcon(getPackageManager().getApplicationIcon(getPackageName()))
-			.setTitle(getString(R.string.dialogList_title))
-			.setMessage(text)
-			.setPositiveButton(R.string.copy_str, listenerAbout)
-			.setNegativeButton(R.string.share_str, listenerAbout)
-			.show();
-		} catch (NameNotFoundException e) {
-			e.printStackTrace();
-		}
+		new AlertDialog.Builder(this)
+		.setIcon(android.R.drawable.ic_dialog_info)
+		.setTitle(getString(R.string.dialogList_title))
+		.setMessage(text)
+		.setPositiveButton(R.string.copy_str, listenerAbout)
+		.setNegativeButton(R.string.share_str, listenerAbout)
+		.show();
 	}
 	
 	public void onResume() {
@@ -348,6 +350,80 @@ public class Main extends Activity {
 
 	}
 	
+	public void showSettings(){
+		LayoutInflater factory = LayoutInflater.from(this);
+        final View view = factory.inflate(R.layout.setting, null);
+
+		CheckBox chk1 = (CheckBox) view.findViewById(R.id.checkBox1);
+		CheckBox chk2 = (CheckBox) view.findViewById(R.id.checkBox2);
+		
+		if (config.getBoolean("send_after_speaking", true)){
+			chk1.setChecked(true);
+		} else {
+			chk1.setChecked(false);
+		}
+		
+		if (config.getBoolean("showSplash", true)){
+			chk2.setChecked(true);
+		} else {
+			chk2.setChecked(false);
+		}
+		
+    	DialogInterface.OnClickListener listenerAbout = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int whichButton) {
+				switch (whichButton) {
+				case DialogInterface.BUTTON_POSITIVE:
+					CheckBox chk1 = (CheckBox) view.findViewById(R.id.checkBox1);
+					CheckBox chk2 = (CheckBox) view.findViewById(R.id.checkBox2);
+					Editor editor = config.edit();
+					editor.putBoolean("send_after_speaking", chk1.isChecked());
+					editor.putBoolean("showSplash", chk2.isChecked());
+					editor.commit();
+					GetConfigAction();
+					break;
+				case DialogInterface.BUTTON_NEGATIVE:
+					dialogExit.cancel();
+					break;
+				}
+			}
+		};
+		dialogExit = new AlertDialog.Builder(this)
+		.setIcon(android.R.drawable.ic_dialog_info)
+		.setTitle(getString(R.string.setting_title))
+		.setView(view)
+		.setPositiveButton(android.R.string.ok, listenerAbout)
+		.setNegativeButton(android.R.string.no, listenerAbout)
+		.show();
+	}
+
+	public void showHelp(){
+		LayoutInflater factory = LayoutInflater.from(this);
+        final View view = factory.inflate(R.layout.help, null);
+    	DialogInterface.OnClickListener listenerAbout = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int whichButton) {
+				switch (whichButton) {
+				case DialogInterface.BUTTON_POSITIVE:
+					Uri uri = Uri.parse(C.our_website);
+					Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+					startActivity(intent);
+					break;
+				case DialogInterface.BUTTON_NEGATIVE:
+					dialogExit.cancel();
+					break;
+				}
+			}
+		};
+		dialogExit = new AlertDialog.Builder(this)
+		.setIcon(android.R.drawable.ic_dialog_info)
+		.setTitle(getString(R.string.help_title))
+		.setView(view)
+		.setPositiveButton(getString(R.string.help_visitus), listenerAbout)
+		.setNegativeButton(android.R.string.ok, listenerAbout)
+		.show();
+	}
+	
 	public void getVoice(){
 		RecognizerDialog isrDialog = new RecognizerDialog(Main.this, C.voice_api_key);
 
@@ -360,8 +436,7 @@ public class Main extends Activity {
 		
 		@Override
 		public void onResults(ArrayList<RecognizerResult> results,boolean isLast) {
-			// 服务器识别完成后会返回集合，我们这里就只得到最匹配的那一项
-			text += results.get(0).text;
+			text = results.get(0).text;
 			System.out.println(text);
 		}
 

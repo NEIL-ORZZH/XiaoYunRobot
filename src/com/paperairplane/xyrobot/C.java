@@ -5,6 +5,7 @@ public class C {
 	static String
 	        update_ver_url = "http://1.paperairplane.sinaapp.com/xy-robot/update.php",
 			author_blog_url = "http://pap.xp3.biz/",
+			our_website = "http://www.papdt.info",
 			baidu_tongji_key = "cab1d67453",
 			baidu_tongji_market = "unknow",
 			baidu_app_key = "iBUqGSXofz5AmZ1dX5EbylsR",

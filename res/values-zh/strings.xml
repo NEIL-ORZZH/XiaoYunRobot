@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">小云机器人</string>
-    <string name="menu_settings">关于 小云机器人</string>
     <string name="myname">我</string>
     <string name="robotname">小云</string>
     <string name="et1_hint">在这里输入文字</string>
@@ -13,18 +12,17 @@
     <string name="AI_StringEMPTY">请输入内容</string>
     <string name="menu_exit">退出</string>
     <string name="menu_areyouwant2exit">你真的要退出吗？</string>
-    <string name="menu_reload">重新加载词库</string>
+    <string name="menu_help">我能干什么</string>
     <string name="menu_about">关于小云机器人</string>
     <string name="exit_yes">因为你太笨了</string>
     <string name="exit_no">哦，那再留会儿。</string>
     <string name="exit_context">为什么不留一会儿呢？</string>
     <string name="about_context">小云机器人  [Version]\n纸飞机移动应用出品\n程序开发: Fython\n美工: Fython\n新浪微博:@Sudo-\n邮箱:fython@163.com\n\n特别鸣谢@HarryChen-SIGKILL- @姚沛然 等大神指导\n欢迎使用本软件,欢迎多提意见</string>
     <string name="about_contact">访问作者博客</string>
-    <string name="whatsnew">修复了一系列的BUG，哈哈，4.0可以翻译了吧！？</string>
     <string name="dialogList_title">选择一项操作</string>
     <string name="copy_str">复制</string>
     <string name="share_str">"分享到...."</string>
-    <string name="shareinfo_left">"哈啰! 我正在和小云机器人( http://189.io/otzRnn ) 聊天. 我发一条消息很有趣 现在分享给大家 ： \""</string>
+    <string name="shareinfo_left">"哈啰! 我正在和小云机器人( http://www.papdt.info ) 聊天. 我发现一条消息很有趣 现在分享给大家 ： \""</string>
     <string name="shareinfo_right">" \”。"</string>
     <string name="how_to_share">请选择分享方式</string>
     <string name="internet_error">"网络错误"</string>
@@ -35,5 +33,19 @@
     <string name="update_release_date">更新日期:</string>
     <string name="update_download">现在下载</string>
     <string name="update_nothanks">不, 谢谢.</string>
+    
+    <string name="voice_api_null">"噢！抱歉，我听不到你在说什么。"</string>
+    
+    <string name="chk_set1">"说话后自动发送信息"</string>
+    <string name="chk_set2">"显示启动画面"</string>
+    <string name="setting_title">设置</string>
+    <string name="menu_settings">设置</string>
+    <string name="help_visitus">"访问纸飞机停机坪"</string>
+    <string name="help_title">我能做些什么</string>
+    
+    <string name="whatcanido">
+        "我能做些什么？\n·打电话\n输入\"打电话给XXXX\"就可以呼叫该电话了，目前还不支持联系人呼叫只能输入数字\n\n·翻译一段话\n输入\"翻译XXX\"翻译一个单词或是句子甚至是一段话\n提示:输入
+        \"翻译到日文\"可以翻译成日语\n\n·询问日期、时间、中考、高考倒计时\n小云支持一些自然语言的时间、日期询问，或是今年是什么生肖年，以及中考倒计时等\n\n·他还可以说一些日常用于
+        \n比如你好、晚安、早上好之类的问候语\n当然，你还可以骂一下他，不过我可不是要叫你去学习如何骂人\n\n还有更多功能等你去发现！"</string>
     
 </resources>
