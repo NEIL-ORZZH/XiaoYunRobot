@@ -36,5 +36,6 @@
     <string name="update_release_date">Release Date:</string>
     <string name="update_download">Download</string>
     <string name="update_nothanks">No, thanks.</string>
+    <string name="voice_api_null">"Sorry, I couldn't hear what you said."</string>
     
 </resources>

@@ -35,13 +35,17 @@ import android.widget.Toast;
 
 import com.baidu.mobstat.SendStrategyEnum;
 import com.baidu.mobstat.StatService;
+import com.iflytek.speech.RecognizerResult;
+import com.iflytek.speech.SpeechError;
+import com.iflytek.ui.RecognizerDialog;
+import com.iflytek.ui.RecognizerDialogListener;
 
 @SuppressLint("HandlerLeak")
 public class Main extends Activity {
 
 	static int i=0 , clickedlist=0;
 	static Context mc;
-	private String UserMsg,AIMsg1,AIMsg2;
+	private String UserMsg,AIMsg1,AIMsg2,text;
 	public static String AI_UnknowMsg,update_text,update_url;
 	private List<String> data = new ArrayList<String>();
 	private AlertDialog dialogAbout,dialogExit;
@@ -70,6 +74,13 @@ public class Main extends Activity {
 			case C.handlermsg.version_new:
 				updateApp((String[]) msg.obj);
 				break;
+			case C.handlermsg.voice_api_nullmsg:
+				Toast.makeText(mc, mc.getString(R.string.voice_api_null), Toast.LENGTH_SHORT).show();
+				break;
+			case C.handlermsg.voice_api_gotmsg:
+				EditText et = (EditText) findViewById(R.id.editText1);
+				et.setText(msg.getData().getString("text"));
+				break;
 			}
 		}
 	};
@@ -80,6 +91,7 @@ public class Main extends Activity {
 		setContentView(R.layout.activity_main);
 		mc = getApplicationContext();
 		
+		// API 初始化
 		try{
 			StatService.setAppKey(C.baidu_tongji_key);
 			StatService.setAppChannel(C.baidu_tongji_market);
@@ -89,6 +101,7 @@ public class Main extends Activity {
 				Log.e("baidu tongji","OH!shit.还好我躲过了FC");
 		}
 		
+		// 程序初始化
 		((Button) findViewById(R.id.button1)).setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
@@ -103,7 +116,7 @@ public class Main extends Activity {
 					return;
 				}
 				
-				Thread thread = new Thread(){
+				new Thread(){
 					public void run(){
 						
 						/* 聊天记录反馈 */
@@ -111,8 +124,7 @@ public class Main extends Activity {
 						addItem(handler,getString(R.string.robotname),RobotAI.getAnswer(UserMsg,getApplicationContext()),false);
 						
 					}
-				};
-				thread.start();
+				}.start();
 				
 			}
 		});
@@ -121,6 +133,14 @@ public class Main extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				((EditText) findViewById(R.id.editText1)).setText("");
+			}
+			
+		});
+		
+		((ImageButton) findViewById(R.id.imageButton2)).setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+						getVoice();
 			}
 			
 		});
@@ -272,13 +292,17 @@ public class Main extends Activity {
 			}
 		};
 		
-		new AlertDialog.Builder(this)
-		.setIcon(android.R.drawable.ic_dialog_alert)
-		.setTitle(getString(R.string.dialogList_title))
-		.setMessage(text)
-		.setPositiveButton(R.string.copy_str, listenerAbout)
-		.setNegativeButton(R.string.share_str, listenerAbout)
-		.show();
+		try {
+			new AlertDialog.Builder(this)
+			.setIcon(getPackageManager().getApplicationIcon(getPackageName()))
+			.setTitle(getString(R.string.dialogList_title))
+			.setMessage(text)
+			.setPositiveButton(R.string.copy_str, listenerAbout)
+			.setNegativeButton(R.string.share_str, listenerAbout)
+			.show();
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void onResume() {
@@ -322,5 +346,47 @@ public class Main extends Activity {
 				})
 				.show();
 
+	}
+	
+	public void getVoice(){
+		RecognizerDialog isrDialog = new RecognizerDialog(Main.this, C.voice_api_key);
+
+		isrDialog.setEngine("sms", null, null);
+		isrDialog.setListener(recoListener);
+		isrDialog.show();
+	}
+	
+	RecognizerDialogListener recoListener = new RecognizerDialogListener() {
+		
+		@Override
+		public void onResults(ArrayList<RecognizerResult> results,boolean isLast) {
+			// 服务器识别完成后会返回集合，我们这里就只得到最匹配的那一项
+			text += results.get(0).text;
+			System.out.println(text);
+		}
+
+		@Override
+		public void onEnd(SpeechError error) {
+			if (error == null) {
+				sendMsg(text);
+			} else{
+				sendNull();
+			}
+
+		}
+
+	};
+
+	public void sendMsg(String string){
+		Message msg = new Message();
+		Bundle data = new Bundle();
+		msg.what = C.handlermsg.voice_api_gotmsg;
+		data.putString("text", string);
+		msg.setData(data);
+		handler.sendMessage(msg);
+	}
+	
+	public void sendNull(){
+		handler.sendEmptyMessage(C.handlermsg.voice_api_nullmsg);
 	}
 }

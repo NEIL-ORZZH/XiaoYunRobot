@@ -25,17 +25,6 @@ public class RobotAI {
 		
 		
 		/* 实用部分 */
-		if ((question.indexOf("音乐") != -1) & (question.indexOf("分享") != -1)){
-			return Tools.StartAndroidAPP("com.paperairplane.music.share",context) ? "启动成功！现在使用音乐分享为您服务。" : "抱歉，您没有安装音乐分享不可以使用本服务。请登录http://www.paperairplane.tk";
-		}
-		if ((question.indexOf("配置") != -1) | (question.indexOf("CPU") != -1) | (question.indexOf("手机") != -1)){
-			String result =
-					"该Android 手机配置信息如下\nCPU:"+Build.CPU_ABI
-					+" 系统版本:"+Build.VERSION.RELEASE
-					+"\nSDK版本:"+((Integer) Build.VERSION.SDK_INT).toString()+"\n机主号码:";
-			String phonenumber = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
-			return result+phonenumber;
-		}
 		if ((question.indexOf("打电话") != -1)|(question.indexOf("打给") != -1)){
 			String str1 = question;
 			if (question.indexOf("打") != -1) str1 = Extrabase.ReplaceStr(str1, "打", "");
@@ -82,7 +71,18 @@ public class RobotAI {
 			}
 			return Tools.Translate(str1,from,to);
 		}
-
+		if ((question.indexOf("音乐") != -1) & (question.indexOf("分享") != -1)){
+			return Tools.StartAndroidAPP("com.paperairplane.music.share",context) ? "启动成功！现在使用音乐分享为您服务。" : "抱歉，您没有安装音乐分享不可以使用本服务。请登录http://www.paperairplane.tk";
+		}
+		if ((question.indexOf("硬件") != -1) | (question.indexOf("配置") != -1) | (question.indexOf("CPU") != -1)){
+			String result =
+					"该Android 手机配置信息如下\n 手机型号:"+Build.MANUFACTURER+" "+Build.MODEL
+					+"\n CPU:"+Build.CPU_ABI
+					+"\n 系统版本:"+Build.VERSION.RELEASE
+					+"\n SDK版本:"+((Integer) Build.VERSION.SDK_INT).toString()+"\n 机主号码:";
+			String phonenumber = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
+			return result + ( phonenumber == "null" ? "不可用" : phonenumber);
+		}
 		
 		/* 自定义问答库 */
 		String extra = Extrabase.getAnswer(question);
