@@ -87,9 +87,22 @@ public class RobotAI {
 			}
 			return Tools.Translate(str1,from,to);
 		}
+		
+		if (question.indexOf("天气") != -1 | question.toLowerCase().indexOf("weather") != -1){
+			String str1 = question;
+			if (question.indexOf("天气") != -1) str1 = Extrabase.ReplaceStr(str1, "天气", "");
+			if (question.indexOf("weather") != -1) str1 = Extrabase.ReplaceStr(str1, "weather", "");
+			if (question.indexOf("如何") != -1) str1 = Extrabase.ReplaceStr(str1, "如何", "");
+			if (question.indexOf("怎样") != -1) str1 = Extrabase.ReplaceStr(str1, "怎样", "");
+			if (question.indexOf("查") != -1) str1 = Extrabase.ReplaceStr(str1, "查", "");
+			if (question.indexOf("询") != -1) str1 = Extrabase.ReplaceStr(str1, "询", "");
+			return Tools.getWeather(str1);
+		}
+		
 		if ((question.indexOf("音乐") != -1) & (question.indexOf("分享") != -1)){
 			return Tools.StartAndroidAPP("com.paperairplane.music.share",context) ? "启动成功！现在使用音乐分享为您服务。" : "抱歉，您没有安装音乐分享不可以使用本服务。请登录http://www.paperairplane.tk";
 		}
+		
 		if ((question.indexOf("硬件") != -1) | (question.indexOf("配置") != -1) | (question.toLowerCase().indexOf("cpu") != -1)){
 			String result =
 					"该Android 手机配置信息如下\n 手机型号:"+Build.MANUFACTURER+" "+Build.MODEL

@@ -49,6 +49,7 @@
     
     <string name="chk_set1">"Send message after speaking"</string>
     <string name="chk_set2">"Show splash screen"</string>
+    <string name="chk_set3">"Auto check update"</string>
     <string name="setting_title">Settings</string>
     <string name="menu_settings">Settings</string>
     <string name="whatcanido">"What can I do?"</string>

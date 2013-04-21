@@ -1,6 +1,5 @@
 package com.paperairplane.xyrobot;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +40,7 @@ import com.baidu.mobstat.SendStrategyEnum;
 import com.baidu.mobstat.StatService;
 import com.iflytek.speech.RecognizerResult;
 import com.iflytek.speech.SpeechError;
+import com.iflytek.speech.SynthesizerPlayer;
 import com.iflytek.ui.RecognizerDialog;
 import com.iflytek.ui.RecognizerDialogListener;
 
@@ -53,7 +53,7 @@ public class Main extends Activity {
 	public static String AI_UnknowMsg,update_text,update_url;
 	private List<String> data = new ArrayList<String>();
 	private AlertDialog dialogAbout,dialogExit;
-	private boolean isSendAfterSpeaking;
+	private boolean isSendAfterSpeaking,isAutoCheckUpdate;
 	SharedPreferences config;
 	
 	public Handler handler = new Handler(){
@@ -138,7 +138,7 @@ public class Main extends Activity {
 		AI_UnknowMsg = getString(R.string.AI_unknow);
 		addItem(handler,getString(R.string.robotname),getString(R.string.AI_hello),false);
 		
-		new Thread(){
+		Thread updateThread = new Thread(){
 			public void run(){
 				Looper.prepare();
 				try {
@@ -147,7 +147,11 @@ public class Main extends Activity {
 					e.printStackTrace();
 				}
 			}
-		}.start();
+		};
+		
+		if (isAutoCheckUpdate) {
+			updateThread.start();
+		}
 		
 	}
 
@@ -177,6 +181,7 @@ public class Main extends Activity {
 	public void GetConfigAction(){
 		config = getSharedPreferences("config", Context.MODE_APPEND);
 		isSendAfterSpeaking = config.getBoolean("send_after_speaking", true);
+		isAutoCheckUpdate = config.getBoolean("auto_check_update", true);
 	}
 	
 	public void addItem(Handler handler,String title,String text,boolean showAni){
@@ -294,6 +299,9 @@ public class Main extends Activity {
 							        getString(R.string.shareinfo_left) + data.get(clickedlist) + getString(R.string.shareinfo_right));
 					startActivity(Intent.createChooser(intent,getString(R.string.how_to_share)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 					break;
+				case DialogInterface.BUTTON_NEUTRAL:
+					playVoice(data.get(clickedlist));
+					break;
 				}
 			}
 		};
@@ -304,6 +312,7 @@ public class Main extends Activity {
 		.setMessage(text)
 		.setPositiveButton(R.string.copy_str, listenerAbout)
 		.setNegativeButton(R.string.share_str, listenerAbout)
+		.setNeutralButton("Listen", listenerAbout)
 		.show();
 	}
 	
@@ -356,6 +365,7 @@ public class Main extends Activity {
 
 		CheckBox chk1 = (CheckBox) view.findViewById(R.id.checkBox1);
 		CheckBox chk2 = (CheckBox) view.findViewById(R.id.checkBox2);
+		CheckBox chk3 = (CheckBox) view.findViewById(R.id.checkBox3);
 		
 		if (config.getBoolean("send_after_speaking", true)){
 			chk1.setChecked(true);
@@ -369,6 +379,12 @@ public class Main extends Activity {
 			chk2.setChecked(false);
 		}
 		
+		if (config.getBoolean("auto_check_update", true)){
+			chk3.setChecked(true);
+		} else {
+			chk3.setChecked(false);
+		}
+		
     	DialogInterface.OnClickListener listenerAbout = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
@@ -376,9 +392,11 @@ public class Main extends Activity {
 				case DialogInterface.BUTTON_POSITIVE:
 					CheckBox chk1 = (CheckBox) view.findViewById(R.id.checkBox1);
 					CheckBox chk2 = (CheckBox) view.findViewById(R.id.checkBox2);
+					CheckBox chk3 = (CheckBox) view.findViewById(R.id.checkBox3);
 					Editor editor = config.edit();
 					editor.putBoolean("send_after_speaking", chk1.isChecked());
 					editor.putBoolean("showSplash", chk2.isChecked());
+					editor.putBoolean("auto_check_update", chk3.isChecked());
 					editor.commit();
 					GetConfigAction();
 					break;
@@ -430,6 +448,12 @@ public class Main extends Activity {
 		isrDialog.setEngine("sms", null, null);
 		isrDialog.setListener(recoListener);
 		isrDialog.show();
+	}
+	
+	public void playVoice(String string){
+		SynthesizerPlayer player = SynthesizerPlayer.createSynthesizerPlayer(Main.this, C.voice_api_key);
+		player.setVoiceName("vivixiaomei");
+		player.playText(string, "ent=vivi21,bft=5",null);
 	}
 	
 	RecognizerDialogListener recoListener = new RecognizerDialogListener() {

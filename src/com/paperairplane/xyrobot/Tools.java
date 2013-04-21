@@ -7,8 +7,11 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -160,6 +163,61 @@ public class Tools {
 			e.printStackTrace();
 			handler.sendEmptyMessage(C.handlermsg.internet_error);
 		}
+	}
+	
+	@SuppressWarnings("unused")
+	public static String getWeather(String cityname){
+		String json,result = null;
+		HttpResponse httpResponse;
+		if (cityname.length() > 0 && cityname.charAt(0) == ' ') {
+			cityname = cityname.substring(1);
+		}
+		String citycode = "";
+		if (C.weatherCityCode.indexOf(cityname) == -1){
+			return "您所查询的城市暂时没有数据，很抱歉。";
+		}
+		citycode = C.weatherCityCode.substring(
+				C.weatherCityCode.indexOf(cityname)+(cityname+":").length(),
+				C.weatherCityCode.indexOf(cityname)+(cityname+":").length()+8
+				).trim();
+		Log.v("WeatherAPI" , "所解析的城市代码为 "+citycode);
+		try {
+			//HttpGet httpGet = new HttpGet("http://www.weather.com.cn/data/cityinfo/"+citycode+".html");
+			HttpGet httpGet = new HttpGet("http://1.xybot.sinaapp.com/w2.php?a="+citycode);
+			HttpClient hc = new DefaultHttpClient();
+			hc.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 30000);
+			httpResponse = hc.execute(httpGet);
+			if (httpResponse.getStatusLine().getStatusCode() == 200) {
+				json = EntityUtils.toString(httpResponse.getEntity());
+				Log.v("WeatherAPI", "返回结果为" + json);
+			} else {
+				json = null;
+				return "抱歉，网络错误，查询失败。";
+			}
+		} catch (ConnectTimeoutException e) {
+			Log.v("WeatherAPI", "抛出错误" + e.getMessage());
+			e.printStackTrace();
+			json = null;
+			return "抱歉，查询失败，网络连接超时。";
+		} catch (Exception e) {
+			Log.v("WeatherAPI", "抛出错误" + e.getMessage());
+			e.printStackTrace();
+			json = null;
+			return "抱歉，查询失败，请检查您的网络设置";
+		}
+		/*try {
+			JSONTokener jsonParser = new JSONTokener(json); 
+			JSONObject person1 = (JSONObject) jsonParser.nextValue();
+			JSONObject person = (JSONObject) person1.getJSONObject("weatherinfo");
+			result = cityname+"的天气情况:\n";
+			result += "今天天气:"+person.getString("weather")+"\n";
+			result += "气温:"+person.getString("temp2")+"~"+person.getString("temp1")+"℃";
+			return result;
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return "查询失败，服务端返回了错误的信息";
+		}*/
+		return json;
 	}
 	
 }

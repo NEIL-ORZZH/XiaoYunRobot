@@ -9,19 +9,19 @@
 
     <requestFocus />
 
-    <TableRow
-        android:id="@+id/tableRow1"
+    <ScrollView
+        android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
         <TextView
             android:id="@+id/textView1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/whatcanido"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:attr/textAppearance"
             android:textColor="#FFFFFF" />
 
-    </TableRow>
+    </ScrollView>
 
 </LinearLayout>

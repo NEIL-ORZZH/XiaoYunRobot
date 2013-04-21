@@ -38,6 +38,7 @@
     
     <string name="chk_set1">"说话后自动发送信息"</string>
     <string name="chk_set2">"显示启动画面"</string>
+    <string name="chk_set3">"自动检查更新"</string>
     <string name="setting_title">设置</string>
     <string name="menu_settings">设置</string>
     <string name="help_visitus">"访问纸飞机停机坪"</string>
@@ -45,7 +46,7 @@
     
     <string name="whatcanido">
         "我能做些什么？\n·打电话\n输入\"打电话给XXXX\"就可以呼叫该电话了，目前还不支持联系人呼叫只能输入数字\n\n·翻译一段话\n输入\"翻译XXX\"翻译一个单词或是句子甚至是一段话\n提示:输入
-        \"翻译到日文\"可以翻译成日语\n\n·询问日期、时间、中考、高考倒计时\n小云支持一些自然语言的时间、日期询问，或是今年是什么生肖年，以及中考倒计时等\n\n·他还可以说一些日常用于
+        \"翻译到日文\"可以翻译成日语\n\n·询问日期、时间、中考、高考倒计时\n小云支持一些自然语言的时间、日期询问，或是今年是什么生肖年，以及中考倒计时等\n\n·他还可以说一些日常用语
         \n比如你好、晚安、早上好之类的问候语\n当然，你还可以骂一下他，不过我可不是要叫你去学习如何骂人\n\n还有更多功能等你去发现！"</string>
     
 </resources>

@@ -30,6 +30,7 @@
         android:layout_alignTop="@+id/editText1"
         android:background="@drawable/holo_button"
         android:text="@string/btn1_text"
+        android:textColor="#FFFFFF"
         android:textSize="@dimen/EditTextSize" />
 
     <ListView
